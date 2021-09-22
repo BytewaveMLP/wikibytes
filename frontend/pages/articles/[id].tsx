@@ -3,6 +3,7 @@ import gql from 'graphql-tag';
 import { useQuery } from '@apollo/client';
 import { ArticleQuery, ArticleQueryVariables } from '../../src/graphql/types';
 import { useRouter } from 'next/dist/client/router';
+import Link from 'next/link';
 
 const ARTICLE_QUERY = gql`
 query Article($id: ID!) {
@@ -23,10 +24,15 @@ const Article: NextPage = () => {
   const article = data?.article;
 
   return (
-    <article>
-      <h1>{article?.title}</h1>
-      {article?.body}
-    </article>
+    <>
+      <article>
+        <h1>{article?.title}</h1>
+        {article?.body}
+      </article>
+      <Link href={`/articles/${id}/edit`}>
+        <a>Edit</a>
+      </Link>
+    </>
   );
 };
 

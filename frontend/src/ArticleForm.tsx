@@ -1,5 +1,6 @@
 import gql from "graphql-tag";
 import { useEffect, useState } from "react";
+import { Form, Button } from "react-bootstrap";
 import { ArticleFormFragment } from "./graphql/types";
 
 export const ARTICLE_FORM_FRAGMENT = gql`
@@ -25,19 +26,19 @@ const ArticleForm: React.FC<ArticleFormProps> = ({ onSubmit, loading, errors, ..
   }, [props.title, props.body]);
 
   return (
-    <form onSubmit={(event) => {
+    <Form onSubmit={(event) => {
       event.preventDefault();
       onSubmit(title, body);
     }}>
-      <div>
-        <label htmlFor="title">Title</label>
-        <input type="text" id="title" name="title" value={title} onChange={(event) => setTitle(event.currentTarget.value)} disabled={loading} />
-      </div>
+      <Form.Group>
+        <Form.Label htmlFor="title">Title</Form.Label>
+        <Form.Control type="text" id="title" name="title" value={title} onChange={(event) => setTitle(event.currentTarget.value)} disabled={loading} />
+      </Form.Group>
 
-      <div>
-        <label htmlFor="body">Body</label>
-        <textarea id="body" name="body" value={body} onChange={(event) => setBody(event.currentTarget.value)} disabled={loading} />
-      </div>
+      <Form.Group>
+        <Form.Label htmlFor="body">Body</Form.Label>
+        <Form.Control as="textarea" id="body" name="body" value={body} onChange={(event) => setBody(event.currentTarget.value)} disabled={loading} />
+      </Form.Group>
 
       <ul>
         {errors?.map((error) => (
@@ -45,8 +46,8 @@ const ArticleForm: React.FC<ArticleFormProps> = ({ onSubmit, loading, errors, ..
         ))}
       </ul>
 
-      <button type="submit" disabled={loading}>Submit</button>
-    </form>
+      <Button type="submit" disabled={loading}>Submit</Button>
+    </Form>
   );
 };
 
