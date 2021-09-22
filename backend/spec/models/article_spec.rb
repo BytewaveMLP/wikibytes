@@ -10,6 +10,10 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
+# Indexes
+#
+#  index_articles_on_title  (title) UNIQUE
+#
 require 'rails_helper'
 
 RSpec.describe Article, type: :model do

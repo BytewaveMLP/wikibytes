@@ -6,6 +6,8 @@ class CreateArticles < ActiveRecord::Migration[6.1]
       t.string :title, null: false
       t.string :body, null: false
 
+      t.index :title, unique: true
+
       t.timestamps
     end
   end
