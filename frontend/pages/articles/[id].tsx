@@ -1,10 +1,9 @@
-import type { GetServerSideProps, NextPage } from 'next';
 import gql from 'graphql-tag';
-import { useQuery } from '@apollo/client';
-import { ArticleQuery, ArticleQueryVariables } from '../../src/graphql/types';
+import type { GetServerSideProps, NextPage } from 'next';
 import { useRouter } from 'next/dist/client/router';
 import Link from 'next/link';
 import client from '../../src/apollo-client';
+import { ArticleQuery, ArticleQueryVariables } from '../../src/graphql/types';
 
 const ARTICLE_QUERY = gql`
 query Article($id: ID!) {

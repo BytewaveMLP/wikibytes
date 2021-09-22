@@ -4,43 +4,36 @@ import { Form, Button } from "react-bootstrap";
 import { ArticleFormFragment } from "./graphql/types";
 
 export const ARTICLE_FORM_FRAGMENT = gql`
-fragment ArticleForm on Article {
-  title
-  body
-}
+  fragment ArticleForm on Article {
+    title
+    body
+  }
 `;
 
 interface ArticleFormProps extends ArticleFormFragment {
-  onSubmit: (title: string, body: string) => void;
-  loading: boolean;
-  errors: string[];
+  title: string;
+  body: string;
+  disabled: boolean;
+  errors?: string[] | null;
+  onTitleChange: (title: string) => void;
+  onBodyChange: (body: string) => void;
+  onSubmit: () => void;
 }
 
-const ArticleForm: React.FC<ArticleFormProps> = ({ onSubmit, loading, errors, ...props }) => {
-  const [title, setTitle] = useState(props.title);
-  const [body, setBody] = useState(props.body);
-
-  useEffect(() => {
-    setTitle(props.title);
-  }, [props.title]);
-
-  useEffect(() => {
-    setBody(props.body);
-  }, [props.body]);
-
+const ArticleForm: React.FC<ArticleFormProps> = ({ title, body, disabled, errors, onTitleChange, onBodyChange, onSubmit }) => {
   return (
     <Form onSubmit={(event) => {
       event.preventDefault();
-      onSubmit(title, body);
+      onSubmit();
     }}>
       <Form.Group className="mb-3">
         <Form.Label htmlFor="title">Title</Form.Label>
-        <Form.Control type="text" id="title" name="title" value={title} onChange={(event) => setTitle(event.currentTarget.value)} disabled={loading} />
+        <Form.Control type="text" id="title" name="title" value={title} onChange={(event) => onTitleChange(event.currentTarget.value)} disabled={disabled} />
       </Form.Group>
 
       <Form.Group className="mb-3">
         <Form.Label htmlFor="body">Body</Form.Label>
-        <Form.Control as="textarea" id="body" name="body" value={body} onChange={(event) => setBody(event.currentTarget.value)} disabled={loading} />
+        <Form.Control as="textarea" id="body" name="body" value={body} onChange={(event) => onBodyChange(event.currentTarget.value)} disabled={disabled} />
       </Form.Group>
 
       <ul>
@@ -49,7 +42,7 @@ const ArticleForm: React.FC<ArticleFormProps> = ({ onSubmit, loading, errors, ..
         ))}
       </ul>
 
-      <Button type="submit" disabled={loading}>Submit</Button>
+      <Button type="submit" disabled={disabled}>Submit</Button>
     </Form>
   );
 };
