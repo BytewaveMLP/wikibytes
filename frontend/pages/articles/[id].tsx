@@ -1,9 +1,10 @@
-import type { NextPage } from 'next';
+import type { GetServerSideProps, NextPage } from 'next';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/client';
 import { ArticleQuery, ArticleQueryVariables } from '../../src/graphql/types';
 import { useRouter } from 'next/dist/client/router';
 import Link from 'next/link';
+import client from '../../src/apollo-client';
 
 const ARTICLE_QUERY = gql`
 query Article($id: ID!) {
@@ -14,14 +15,18 @@ query Article($id: ID!) {
 }
 `;
 
-const Article: NextPage = () => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { id } = context.query;
+  const { data } = await client.query<ArticleQuery, ArticleQueryVariables>({
+    query: ARTICLE_QUERY,
+    variables: { id: id as string },
+  });
+  return { props: { article: data.article } };
+};
+
+const Article: NextPage<{ article: ArticleQuery['article'] }> = ({ article }) => {
   const router = useRouter();
   const { id } = router.query;
-  const { data, loading } = useQuery<ArticleQuery, ArticleQueryVariables>(ARTICLE_QUERY, { variables: { id: id as string } });
-
-  if (loading) return ( <p>Loading...</p> );
-
-  const article = data?.article;
 
   return (
     <>

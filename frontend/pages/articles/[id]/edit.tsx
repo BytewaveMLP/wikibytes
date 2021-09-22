@@ -1,9 +1,10 @@
-import type { NextPage } from "next";
+import type { GetServerSideProps, NextPage } from "next";
 import { useRouter } from "next/dist/client/router";
 import gql from "graphql-tag";
 import { useMutation, useQuery } from "@apollo/client";
 import { ArticleFormQuery, ArticleFormQueryVariables, EditArticleMutation, EditArticleMutationVariables } from "../../../src/graphql/types";
 import ArticleForm, { ARTICLE_FORM_FRAGMENT } from "../../../src/ArticleForm";
+import client from "../../../src/apollo-client";
 
 const ARTICLE_FORM_QUERY = gql`
 query ArticleForm($id: ID!) {
@@ -28,13 +29,21 @@ mutation EditArticle($id: ID!, $title: String!, $body: String!) {
 ${ARTICLE_FORM_FRAGMENT}
 `;
 
-const EditArticle: NextPage = () => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { id } = context.query;
+  const { data } = await client.query<ArticleFormQuery, ArticleFormQueryVariables>({
+    query: ARTICLE_FORM_QUERY,
+    variables: { id: id as string },
+  });
+  return { props: { article: data.article } };
+};
+
+const EditArticle: NextPage<{ article: ArticleFormQuery['article'] }> = ({ article }) => {
   const router = useRouter();
   const id = router.query.id as string;
 
-  const { data: queryData, loading: queryLoading } = useQuery<ArticleFormQuery, ArticleFormQueryVariables>(ARTICLE_FORM_QUERY, { variables: { id } });
   const [editArticle, { data: mutationData, loading: mutationLoading }] = useMutation<EditArticleMutation, EditArticleMutationVariables>(EDIT_ARTICLE_MUTATION);
-  const { title, body } = queryData?.article || { title: "", body: "" };
+  const { title, body } = article;
 
   const onSubmit = (title: string, body: string) => {
     editArticle({ variables: { id, title, body } }).then(() => {
@@ -44,15 +53,9 @@ const EditArticle: NextPage = () => {
     });
   };
 
-  if (queryLoading) {
-    return (
-      <p>Loading...</p>
-    );
-  }
-
   return (
     <>
-      <h1>Editing {queryData?.article?.title}</h1>
+      <h1>Editing {title}</h1>
 
       <ArticleForm title={title} body={body} loading={mutationLoading} errors={mutationData?.editArticle?.errors || []} onSubmit={onSubmit} />
     </>
