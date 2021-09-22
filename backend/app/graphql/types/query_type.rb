@@ -6,5 +6,6 @@ module Types
     # They will be entry points for queries on your schema.
 
     field :article, resolver: Resolvers::ArticleResolver
+    field :articles, resolver: Resolvers::ArticlesResolver
   end
 end
